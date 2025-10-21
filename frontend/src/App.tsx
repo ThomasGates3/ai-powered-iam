@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Copy, Check, Send, AlertCircle, Loader2, Shield, Sparkles, Lock, Settings, Search } from 'lucide-react';
+import { Zap, Copy, Check, Send, AlertCircle, Loader2, Shield, Sparkles, Lock, Settings, Download } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { GlowingEffect } from './components/ui/glowing-effect';
 import './App.css';
@@ -65,6 +65,16 @@ function App() {
     navigator.clipboard.writeText(policy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(policy));
+    element.setAttribute('download', 'iam-policy.json');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
   };
 
   const inputLength = input.length;
@@ -151,7 +161,7 @@ function App() {
                   onChange={handleInputChange}
                   maxLength={maxLength}
                   placeholder="e.g., Lambda function needs read-only access to S3 bucket 'data-lake' and write logs to CloudWatch. Restrict to VPC endpoints only."
-                  className="w-full h-56 bg-surface border border-border/70 rounded-xl px-4 py-3 text-text-primary placeholder-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent resize-none font-mono text-sm leading-relaxed transition-all duration-200 hover:border-border"
+                  className="w-full h-56 bg-surface border border-border/70 rounded-xl px-4 py-3 text-text-primary placeholder-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent focus:shadow-lg focus:shadow-accent-blue/20 resize-none font-mono text-sm leading-relaxed transition-all duration-200 hover:border-border"
                 />
               </div>
 
@@ -161,7 +171,7 @@ function App() {
                 disabled={!input.trim() || loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="self-start px-6 py-2.5 bg-gradient-to-r from-accent-blue to-accent-purple hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 group shadow-lg hover:shadow-xl hover:shadow-accent-blue/20"
+                className="self-start px-6 py-2.5 bg-gradient-to-r from-accent-blue to-accent-purple hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold text-white transition-all duration-200 flex items-center gap-2 group shadow-lg hover:shadow-xl hover:shadow-accent-blue/20"
               >
                 {loading ? (
                   <>
@@ -263,25 +273,37 @@ function App() {
                 </div>
                 <AnimatePresence>
                   {policy && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      onClick={handleCopy}
-                      className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 hover:bg-accent-blue/20 border border-accent-blue/30 rounded-lg text-sm font-medium text-accent-blue transition-all duration-200"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </motion.button>
+                    <div className="flex items-center gap-3">
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        onClick={handleCopy}
+                        className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 hover:bg-accent-blue/20 border border-accent-blue/30 rounded-lg text-sm font-medium text-accent-blue transition-all duration-200"
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="w-4 h-4" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </motion.button>
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        onClick={handleDownload}
+                        className="flex items-center gap-2 px-4 py-2 bg-accent-cyan/10 hover:bg-accent-cyan/20 border border-accent-cyan/30 rounded-lg text-sm font-medium text-accent-cyan transition-all duration-200"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download</span>
+                      </motion.button>
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
@@ -361,8 +383,8 @@ function App() {
                       <Zap className="w-16 h-16 text-text-secondary/30 relative" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-text-primary">Ready to generate</p>
-                      <p className="text-xs text-text-secondary mt-1">Describe your access needs to get started</p>
+                      <p className="text-sm font-medium text-text-primary">Your secure policy awaits</p>
+                      <p className="text-xs text-text-secondary mt-1">Describe your access needs to see the magic happen</p>
                     </div>
                   </motion.div>
                 )}
