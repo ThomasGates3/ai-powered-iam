@@ -6,6 +6,15 @@ vi.mock('@monaco-editor/react', () => ({
   default: ({ value }: any) => <div data-testid="monaco-editor">{value}</div>,
 }));
 
+vi.mock('framer-motion', () => ({
+  motion: {
+    header: ({ children, ...props }: any) => <header {...props}>{children}</header>,
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
 describe('App Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -14,7 +23,7 @@ describe('App Component', () => {
   it('renders header with correct title', () => {
     render(<App />);
     expect(screen.getByText('IAM Policy Generator')).toBeInTheDocument();
-    expect(screen.getByText(/Generate secure, least-privilege IAM policies/)).toBeInTheDocument();
+    expect(screen.getByText(/Generate secure, least-privilege policies/)).toBeInTheDocument();
   });
 
   it('renders input textarea with placeholder', () => {
@@ -84,10 +93,10 @@ describe('App Component', () => {
     }, { timeout: 1000 });
   });
 
-  it('displays tips section in input panel', () => {
+  it('displays security feature info cards', () => {
     render(<App />);
-    expect(screen.getByText('Tips:')).toBeInTheDocument();
-    expect(screen.getByText(/Be specific about services/)).toBeInTheDocument();
-    expect(screen.getByText(/Include resource names or ARNs/)).toBeInTheDocument();
+    expect(screen.getByText('Least-Privilege Policy')).toBeInTheDocument();
+    expect(screen.getByText('AI-Generated')).toBeInTheDocument();
+    expect(screen.getByText(/Specific actions, scoped resources/)).toBeInTheDocument();
   });
 });
