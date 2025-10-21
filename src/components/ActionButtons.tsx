@@ -51,9 +51,9 @@ export default function ActionButtons({ policy, onShowNotification }: ActionButt
         disabled={!policy}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="flex-1 py-3 px-4 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
+        className="flex-1 py-3 px-4 bg-white border border-cyan-300 hover:bg-cyan-50 text-gray-900 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
       >
-        {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+        {copied ? <Check className="w-5 h-5 text-cyan-600" /> : <Copy className="w-5 h-5 text-cyan-600" />}
         {copied ? 'Copied!' : 'Copy Policy'}
       </motion.button>
 
@@ -62,7 +62,7 @@ export default function ActionButtons({ policy, onShowNotification }: ActionButt
         disabled={!policy}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="flex-1 py-3 px-4 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-semibold rounded-lg shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+        className="flex-1 py-3 px-4 bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white font-semibold rounded-lg shadow-cyan-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
       >
         <Download className="w-5 h-5" />
         Download JSON

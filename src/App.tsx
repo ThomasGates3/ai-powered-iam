@@ -36,22 +36,22 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-100/30 via-transparent to-transparent" />
 
       <div className="relative min-h-screen flex flex-col">
-        <header className="px-6 py-6 border-b border-gray-800/50 backdrop-blur-sm">
+        <header className="px-6 py-6 border-b border-cyan-200/40 backdrop-blur-sm bg-white/60">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-7xl mx-auto flex items-center gap-3"
           >
-            <div className="p-2 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg shadow-lg shadow-blue-500/30">
+            <div className="p-2 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-lg shadow-cyan-glow">
               <Lock className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">IAM Policy Generator</h1>
-              <p className="text-sm text-gray-400">AI-Powered Least Privilege Access</p>
+              <h1 className="text-2xl font-bold text-gray-900">IAM Policy Generator</h1>
+              <p className="text-sm text-cyan-600">AI-Powered Least Privilege Access</p>
             </div>
           </motion.div>
         </header>
@@ -91,8 +91,8 @@ function App() {
           </div>
         </main>
 
-        <footer className="px-6 py-4 border-t border-gray-800/50 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">
+        <footer className="px-6 py-4 border-t border-cyan-200/40 backdrop-blur-sm bg-white/60">
+          <div className="max-w-7xl mx-auto text-center text-sm text-gray-600">
             Built with React, TypeScript, and Framer Motion
           </div>
         </footer>

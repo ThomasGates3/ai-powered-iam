@@ -1,3 +1,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Light theme with bright cyan accents */
+:root {
+  --background: #fafbfc;
+  --foreground: #000000;
+  --accent: #00f0a0;
+  --accent-hover: #52ffba;
+  --accent-active: #00c98d;
+  --card: #ffffff;
+  --border: #e8eaed;
+  --text-primary: #000000;
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Smooth scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}

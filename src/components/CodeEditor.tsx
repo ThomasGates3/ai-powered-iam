@@ -41,15 +41,15 @@ export default function CodeEditor({ policy, isLoading }: CodeEditorProps) {
     return lines.map((line, index) => {
       let processedLine = line;
 
-      processedLine = processedLine.replace(/"([^"]+)":/g, '<span class="text-blue-400">"$1"</span>:');
-      processedLine = processedLine.replace(/: "([^"]+)"/g, ': <span class="text-green-400">"$1"</span>');
-      processedLine = processedLine.replace(/: (\d+)/g, ': <span class="text-orange-400">$1</span>');
-      processedLine = processedLine.replace(/: (true|false)/g, ': <span class="text-orange-400">$1</span>');
+      processedLine = processedLine.replace(/"([^"]+)":/g, '<span class="text-cyan-600">"$1"</span>:');
+      processedLine = processedLine.replace(/: "([^"]+)"/g, ': <span class="text-emerald-600">"$1"</span>');
+      processedLine = processedLine.replace(/: (\d+)/g, ': <span class="text-amber-600">$1</span>');
+      processedLine = processedLine.replace(/: (true|false)/g, ': <span class="text-amber-600">$1</span>');
       processedLine = processedLine.replace(/(\[|\]|\{|\})/g, '<span class="text-gray-400">$1</span>');
 
       return (
         <div key={index} className="flex">
-          <span className="text-gray-600 select-none w-10 flex-shrink-0 text-right pr-4">
+          <span className="text-gray-400 select-none w-10 flex-shrink-0 text-right pr-4">
             {index + 1}
           </span>
           <span dangerouslySetInnerHTML={{ __html: processedLine }} />
@@ -59,15 +59,15 @@ export default function CodeEditor({ policy, isLoading }: CodeEditorProps) {
   };
 
   return (
-    <div className="h-full bg-[#1e1e1e] rounded-lg border border-gray-800 shadow-2xl overflow-hidden flex flex-col">
-      <div className="bg-[#2d2d2d] border-b border-gray-800 px-4 py-3 flex items-center gap-2">
+    <div className="h-full bg-white rounded-lg border border-cyan-200/30 shadow-md overflow-hidden flex flex-col">
+      <div className="bg-slate-50 border-b border-cyan-200/30 px-4 py-3 flex items-center gap-2">
         <div className="w-3 h-3 rounded-full bg-red-500" />
         <div className="w-3 h-3 rounded-full bg-yellow-500" />
         <div className="w-3 h-3 rounded-full bg-green-500" />
-        <span className="ml-3 text-sm text-gray-400 font-mono">policy.json</span>
+        <span className="ml-3 text-sm text-gray-600 font-mono">policy.json</span>
       </div>
 
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-6 bg-slate-50">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <motion.div
@@ -82,21 +82,21 @@ export default function CodeEditor({ policy, isLoading }: CodeEditorProps) {
           <motion.pre
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-sm font-mono text-gray-300 leading-relaxed"
+            className="text-sm font-mono text-gray-700 leading-relaxed"
           >
             {renderCodeWithSyntax(displayedCode)}
             {isTyping && (
               <motion.span
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
-                className="inline-block w-2 h-4 bg-blue-500 ml-1"
+                className="inline-block w-2 h-4 bg-cyan-500 ml-1"
               />
             )}
           </motion.pre>
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center space-y-3">
-              <div className="text-gray-600 text-4xl">{'{ }'}</div>
+              <div className="text-gray-400 text-4xl">{'{ }'}</div>
               <p className="text-gray-500 font-mono text-sm">
                 Your generated IAM policy will appear here
               </p>
