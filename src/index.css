@@ -17,6 +17,21 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
+/* Dark theme with purple accents */
+[data-theme="dark"] {
+  --background: #1a1a2e;
+  --foreground: #ffffff;
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
+  --accent-active: #7c3aed;
+  --card: #2d2d44;
+  --border: #3d3d5c;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 /* Smooth scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
