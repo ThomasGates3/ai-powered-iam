@@ -6,9 +6,17 @@ import FeatureGrid from './components/FeatureGrid';
 import CodeEditor from './components/CodeEditor';
 import ActionButtons from './components/ActionButtons';
 import ThemeToggle from './components/ThemeToggle';
+import PoliciesHistory from './components/PoliciesHistory';
 import LoadingAnimation from './components/LoadingAnimation';
 import NotificationToast from './components/NotificationToast';
-import { generateIAMPolicy } from './utils/policyGenerator';
+import apiClient from './services/apiClient';
+
+interface Policy {
+  policy_id: string;
+  timestamp: string;
+  description: string;
+  policy_json: string;
+}
 
 function App() {
   const [inputValue, setInputValue] = useState('');
@@ -16,7 +24,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [isDark, setIsDark] = useState(false);
+  const [policies, setPolicies] = useState<Policy[]>([]);
 
+  // Initialize theme
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -24,6 +34,20 @@ function App() {
     setIsDark(shouldBeDark);
     document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
   }, []);
+
+  // Load policies from API on mount
+  useEffect(() => {
+    loadPolicies();
+  }, []);
+
+  const loadPolicies = async () => {
+    try {
+      const fetchedPolicies = await apiClient.getPolicies();
+      setPolicies(fetchedPolicies);
+    } catch (error) {
+      console.error('Failed to load policies:', error);
+    }
+  };
 
   const handleThemeToggle = () => {
     const newTheme = !isDark;
@@ -37,13 +61,34 @@ function App() {
 
     setIsLoading(true);
     try {
-      const policy = await generateIAMPolicy(inputValue);
-      setGeneratedPolicy(policy);
+      const response = await apiClient.generatePolicy(inputValue);
+      setGeneratedPolicy(response.policy_json);
+
+      // Add to policies list
+      const newPolicy: Policy = {
+        policy_id: response.policy_id,
+        timestamp: response.timestamp,
+        description: response.description,
+        policy_json: response.policy_json,
+      };
+      setPolicies([newPolicy, ...policies]);
+
       showNotification('Policy Generated Successfully!');
+      setInputValue('');
     } catch (error) {
-      showNotification('Failed to generate policy');
+      showNotification(error instanceof Error ? error.message : 'Failed to generate policy');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeletePolicy = async (policyId: string) => {
+    try {
+      await apiClient.deletePolicy(policyId);
+      setPolicies(policies.filter(p => p.policy_id !== policyId));
+      showNotification('Policy deleted successfully');
+    } catch (error) {
+      showNotification(error instanceof Error ? error.message : 'Failed to delete policy');
     }
   };
 
@@ -141,6 +186,26 @@ function App() {
             </div>
           </div>
         </main>
+
+        {/* Policies History Section - Above Footer */}
+        {policies.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="px-6 py-8 border-t transition-all duration-300"
+            style={{
+              borderColor: isDark ? 'rgba(126, 34, 206, 0.4)' : 'rgba(34, 197, 255, 0.4)',
+            }}
+          >
+            <div className="max-w-7xl mx-auto">
+              <PoliciesHistory
+                policies={policies}
+                onDelete={handleDeletePolicy}
+                isDark={isDark}
+              />
+            </div>
+          </motion.div>
+        )}
 
         <footer className={`px-6 py-4 border-t transition-all duration-300 backdrop-blur-sm ${
           isDark
