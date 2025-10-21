@@ -15,6 +15,10 @@ export default {
         'text-primary': '#ffffff',
         'text-secondary': '#b4b4b8',
         'accent': {
+          'lime': '#1FE4A5',
+          'teal': '#14B8A6',
+          'gold': '#FFB800',
+          'orange': '#FFA500',
           'blue': '#2563eb',
           'purple': '#9333ea',
           'cyan': '#06b6d4',
@@ -39,6 +43,8 @@ export default {
         'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         'glow': '0 0 20px rgba(37, 99, 235, 0.2)',
+        'glow-lime': '0 0 30px rgba(31, 228, 165, 0.25)',
+        'glow-gold': '0 0 25px rgba(255, 184, 0, 0.2)',
         'glow-purple': '0 0 30px rgba(147, 51, 234, 0.15)',
       },
       backdropBlur: {

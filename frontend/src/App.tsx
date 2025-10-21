@@ -100,9 +100,9 @@ function App() {
           <div className="mx-auto max-w-7xl px-6 py-6">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent-blue to-accent-purple rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-300" />
-                <div className="relative bg-gradient-to-br from-accent-blue to-accent-purple p-2.5 rounded-xl">
-                  <Zap className="w-6 h-6 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-br from-accent-lime to-accent-teal rounded-xl blur opacity-60 group-hover:opacity-100 transition duration-300" />
+                <div className="relative bg-gradient-to-br from-accent-lime to-accent-teal p-2.5 rounded-xl">
+                  <Zap className="w-6 h-6 text-dark" />
                 </div>
               </div>
               <div>
@@ -127,7 +127,7 @@ function App() {
             transition={{ delay: 0.1 }}
             className="w-1/2 flex flex-col gap-6 overflow-y-auto"
           >
-            <div className="relative rounded-2xl overflow-hidden bg-surface/40 backdrop-blur-xs border border-border/50">
+            <div className="relative rounded-3xl overflow-hidden bg-surface/40 backdrop-blur-xs border border-border/50">
               <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={2} />
               <form onSubmit={handleGenerate} className="relative p-6 flex flex-col gap-6">
               <div className="mb-0">
@@ -161,7 +161,7 @@ function App() {
                   onChange={handleInputChange}
                   maxLength={maxLength}
                   placeholder="e.g., Lambda function needs read-only access to S3 bucket 'data-lake' and write logs to CloudWatch. Restrict to VPC endpoints only."
-                  className="w-full h-56 bg-surface border border-border/70 rounded-xl px-4 py-3 text-text-primary placeholder-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent focus:shadow-lg focus:shadow-accent-blue/20 resize-none font-mono text-sm leading-relaxed transition-all duration-200 hover:border-border"
+                  className="w-full h-56 bg-surface border border-border/70 rounded-2xl px-4 py-3 text-text-primary placeholder-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-accent-lime focus:border-transparent focus:shadow-lg focus:shadow-glow-lime resize-none font-mono text-sm leading-relaxed transition-all duration-200 hover:border-border"
                 />
               </div>
 
@@ -169,9 +169,9 @@ function App() {
               <motion.button
                 type="submit"
                 disabled={!input.trim() || loading}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="self-start px-6 py-2.5 bg-gradient-to-r from-accent-blue to-accent-purple hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-semibold text-white transition-all duration-200 flex items-center gap-2 group shadow-lg hover:shadow-xl hover:shadow-accent-blue/20"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="self-start px-7 py-3 bg-gradient-to-r from-accent-lime to-accent-teal hover:from-green-400 hover:to-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl font-bold text-dark transition-all duration-200 flex items-center gap-2 group shadow-lg hover:shadow-glow-lime"
               >
                 {loading ? (
                   <>
@@ -193,13 +193,14 @@ function App() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-blue/20"
+                className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-accent-lime/20 to-accent-teal/10 border border-accent-lime/30 hover:border-accent-lime/60 transition-all"
               >
-                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
-                <div className="relative p-5 flex flex-col gap-3">
-                  <Shield className="w-5 h-5 text-accent-blue" />
+                <div className="relative p-6 flex flex-col gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-lime/20 flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-accent-lime" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-text-primary text-sm">Secure</h3>
+                    <h3 className="font-bold text-text-primary text-sm">Secure</h3>
                     <p className="text-xs text-text-secondary mt-1">Least-privilege by default</p>
                   </div>
                 </div>
@@ -209,13 +210,14 @@ function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-cyan/20"
+                className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-accent-cyan/20 to-accent-lime/10 border border-accent-cyan/30 hover:border-accent-cyan/60 transition-all"
               >
-                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
-                <div className="relative p-5 flex flex-col gap-3">
-                  <Sparkles className="w-5 h-5 text-accent-cyan" />
+                <div className="relative p-6 flex flex-col gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-cyan/20 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-accent-cyan" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-text-primary text-sm">AI-Powered</h3>
+                    <h3 className="font-bold text-text-primary text-sm">AI-Powered</h3>
                     <p className="text-xs text-text-secondary mt-1">Advanced LLM expertise</p>
                   </div>
                 </div>
@@ -225,13 +227,14 @@ function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-purple/20"
+                className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-accent-gold/15 to-accent-orange/10 border border-accent-gold/30 hover:border-accent-gold/60 transition-all"
               >
-                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
-                <div className="relative p-5 flex flex-col gap-3">
-                  <Settings className="w-5 h-5 text-accent-purple" />
+                <div className="relative p-6 flex flex-col gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-gold/20 flex items-center justify-center">
+                    <Settings className="w-6 h-6 text-accent-gold" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-text-primary text-sm">Compliant</h3>
+                    <h3 className="font-bold text-text-primary text-sm">Compliant</h3>
                     <p className="text-xs text-text-secondary mt-1">AWS best practices</p>
                   </div>
                 </div>
@@ -241,13 +244,14 @@ function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-blue/20"
+                className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-accent-lime/15 to-accent-cyan/10 border border-accent-lime/30 hover:border-accent-lime/60 transition-all"
               >
-                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
-                <div className="relative p-5 flex flex-col gap-3">
-                  <Lock className="w-5 h-5 text-accent-blue" />
+                <div className="relative p-6 flex flex-col gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-accent-lime/20 flex items-center justify-center">
+                    <Lock className="w-6 h-6 text-accent-lime" />
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-text-primary text-sm">Fast</h3>
+                    <h3 className="font-bold text-text-primary text-sm">Fast</h3>
                     <p className="text-xs text-text-secondary mt-1">Under 3 seconds</p>
                   </div>
                 </div>
@@ -262,7 +266,7 @@ function App() {
             transition={{ delay: 0.1 }}
             className="w-1/2 flex flex-col gap-4 overflow-hidden"
           >
-            <div className="relative rounded-2xl overflow-hidden flex flex-col h-full bg-surface-alt/20 border border-border/30">
+            <div className="relative rounded-3xl overflow-hidden flex flex-col h-full bg-surface-alt/20 border border-border/30">
               <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={2} />
 
               {/* Header */}
@@ -279,7 +283,7 @@ function App() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         onClick={handleCopy}
-                        className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 hover:bg-accent-blue/20 border border-accent-blue/30 rounded-lg text-sm font-medium text-accent-blue transition-all duration-200"
+                        className="flex items-center gap-2 px-5 py-2 bg-accent-gold/20 hover:bg-accent-gold/30 border border-accent-gold/40 rounded-full text-sm font-semibold text-accent-gold transition-all duration-200 hover:shadow-glow-gold"
                       >
                         {copied ? (
                           <>
@@ -298,7 +302,7 @@ function App() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         onClick={handleDownload}
-                        className="flex items-center gap-2 px-4 py-2 bg-accent-cyan/10 hover:bg-accent-cyan/20 border border-accent-cyan/30 rounded-lg text-sm font-medium text-accent-cyan transition-all duration-200"
+                        className="flex items-center gap-2 px-5 py-2 bg-accent-gold/20 hover:bg-accent-gold/30 border border-accent-gold/40 rounded-full text-sm font-semibold text-accent-gold transition-all duration-200 hover:shadow-glow-gold"
                       >
                         <Download className="w-4 h-4" />
                         <span>Download</span>
