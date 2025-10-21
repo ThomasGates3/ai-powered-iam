@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Copy, Check, Send, AlertCircle, Loader2, Shield, Sparkles } from 'lucide-react';
+import { Zap, Copy, Check, Send, AlertCircle, Loader2, Shield, Sparkles, Lock, Settings, Search } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+import { GlowingEffect } from './components/ui/glowing-effect';
 import './App.css';
 
 function App() {
@@ -108,16 +109,18 @@ function App() {
         </motion.header>
 
         {/* Main Content */}
-        <main className="flex flex-1 overflow-hidden">
+        <main className="flex flex-1 overflow-hidden gap-6 p-6">
           {/* Left Panel - Input */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-1/2 border-r border-border/50 flex flex-col p-8 bg-surface/40 backdrop-blur-xs overflow-hidden"
+            className="w-1/2 flex flex-col gap-6 overflow-y-auto"
           >
-            <form onSubmit={handleGenerate} className="h-full flex flex-col">
-              <div className="mb-6">
+            <div className="relative rounded-2xl overflow-hidden bg-surface/40 backdrop-blur-xs border border-border/50">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={2} />
+              <form onSubmit={handleGenerate} className="relative p-6 flex flex-col gap-6">
+              <div className="mb-0">
                 <div className="flex items-center justify-between mb-4">
                   <label className="block text-sm font-semibold text-text-primary">
                     Describe your access needs
@@ -172,41 +175,74 @@ function App() {
                   </>
                 )}
               </motion.button>
+              </form>
+            </div>
 
-              <div className="flex-1" />
-
-              {/* Info Cards */}
-              <div className="space-y-3">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-surface-alt border border-accent-blue/20 rounded-lg p-4"
-                >
-                  <div className="flex items-start gap-3">
-                    <Shield className="w-5 h-5 text-accent-blue mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold text-text-primary text-sm mb-1">Least-Privilege Policy</h3>
-                      <p className="text-xs text-text-secondary">Specific actions, scoped resources, and condition keys included</p>
-                    </div>
+            {/* Info Cards Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-blue/20"
+              >
+                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
+                <div className="relative p-5 flex flex-col gap-3">
+                  <Shield className="w-5 h-5 text-accent-blue" />
+                  <div>
+                    <h3 className="font-semibold text-text-primary text-sm">Secure</h3>
+                    <p className="text-xs text-text-secondary mt-1">Least-privilege by default</p>
                   </div>
-                </motion.div>
+                </div>
+              </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                  className="bg-surface-alt border border-accent-cyan/20 rounded-lg p-4"
-                >
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="w-5 h-5 text-accent-cyan mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold text-text-primary text-sm mb-1">AI-Generated</h3>
-                      <p className="text-xs text-text-secondary">Powered by advanced LLM with AWS expertise</p>
-                    </div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-cyan/20"
+              >
+                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
+                <div className="relative p-5 flex flex-col gap-3">
+                  <Sparkles className="w-5 h-5 text-accent-cyan" />
+                  <div>
+                    <h3 className="font-semibold text-text-primary text-sm">AI-Powered</h3>
+                    <p className="text-xs text-text-secondary mt-1">Advanced LLM expertise</p>
                   </div>
-                </motion.div>
-              </div>
-            </form>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-purple/20"
+              >
+                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
+                <div className="relative p-5 flex flex-col gap-3">
+                  <Settings className="w-5 h-5 text-accent-purple" />
+                  <div>
+                    <h3 className="font-semibold text-text-primary text-sm">Compliant</h3>
+                    <p className="text-xs text-text-secondary mt-1">AWS best practices</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="relative rounded-2xl overflow-hidden bg-surface-alt border border-accent-blue/20"
+              >
+                <GlowingEffect spread={30} glow={false} disabled={false} proximity={50} inactiveZone={0.5} borderWidth={1.5} />
+                <div className="relative p-5 flex flex-col gap-3">
+                  <Lock className="w-5 h-5 text-accent-blue" />
+                  <div>
+                    <h3 className="font-semibold text-text-primary text-sm">Fast</h3>
+                    <p className="text-xs text-text-secondary mt-1">Under 3 seconds</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
 
           {/* Right Panel - Output */}
@@ -214,13 +250,17 @@ function App() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="w-1/2 flex flex-col p-8 bg-surface-alt/20 backdrop-blur-xs overflow-hidden"
+            className="w-1/2 flex flex-col gap-4 overflow-hidden"
           >
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <label className="block text-sm font-semibold text-text-primary">Generated Policy</label>
-                <p className="text-xs text-text-secondary mt-1">AWS IAM Policy (JSON)</p>
-              </div>
+            <div className="relative rounded-2xl overflow-hidden flex flex-col h-full bg-surface-alt/20 border border-border/30">
+              <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={2} />
+
+              {/* Header */}
+              <div className="relative px-6 pt-6 pb-4 border-b border-border/30 flex items-center justify-between bg-surface/20">
+                <div>
+                  <label className="block text-sm font-semibold text-text-primary">Generated Policy</label>
+                  <p className="text-xs text-text-secondary mt-1">AWS IAM Policy (JSON)</p>
+                </div>
               <AnimatePresence>
                 {policy && (
                   <motion.button
