@@ -95,8 +95,9 @@ describe('App Component', () => {
 
   it('displays security feature info cards', () => {
     render(<App />);
-    expect(screen.getByText('Least-Privilege Policy')).toBeInTheDocument();
-    expect(screen.getByText('AI-Generated')).toBeInTheDocument();
-    expect(screen.getByText(/Specific actions, scoped resources/)).toBeInTheDocument();
+    expect(screen.getByText('Secure')).toBeInTheDocument();
+    expect(screen.getByText('AI-Powered')).toBeInTheDocument();
+    expect(screen.getByText('Compliant')).toBeInTheDocument();
+    expect(screen.getByText('Fast')).toBeInTheDocument();
   });
 });

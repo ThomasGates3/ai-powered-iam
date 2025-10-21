@@ -261,30 +261,30 @@ function App() {
                   <label className="block text-sm font-semibold text-text-primary">Generated Policy</label>
                   <p className="text-xs text-text-secondary mt-1">AWS IAM Policy (JSON)</p>
                 </div>
-              <AnimatePresence>
-                {policy && (
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    onClick={handleCopy}
-                    className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 hover:bg-accent-blue/20 border border-accent-blue/30 rounded-lg text-sm font-medium text-accent-blue transition-all duration-200"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        <span>Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copy</span>
-                      </>
-                    )}
-                  </motion.button>
-                )}
-              </AnimatePresence>
-            </div>
+                <AnimatePresence>
+                  {policy && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      onClick={handleCopy}
+                      className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 hover:bg-accent-blue/20 border border-accent-blue/30 rounded-lg text-sm font-medium text-accent-blue transition-all duration-200"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+              </div>
 
             {/* Editor Container */}
             <div className="flex-1 bg-surface border border-border/30 rounded-xl overflow-hidden shadow-xl">
@@ -392,6 +392,7 @@ function App() {
                 </motion.div>
               )}
             </AnimatePresence>
+            </div>
           </motion.div>
         </main>
       </div>
