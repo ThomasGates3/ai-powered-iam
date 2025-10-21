@@ -150,7 +150,7 @@ function App() {
           <div className={`max-w-7xl mx-auto text-center text-sm transition-colors duration-300 ${
             isDark ? 'text-gray-400' : 'text-gray-600'
           }`}>
-            Built with React, TypeScript, and Framer Motion
+            © 2025 Thomas Gates III
           </div>
         </footer>
       </div>
