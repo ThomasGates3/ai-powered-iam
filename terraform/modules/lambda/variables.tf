@@ -1,0 +1,13 @@
+variable "project_name" { type = string }
+variable "environment" { type = string }
+variable "function_name" { type = string }
+variable "runtime" { type = string }
+variable "memory_size" { type = number }
+variable "timeout" { type = number }
+variable "reserved_concurrency" { type = number }
+variable "vpc_id" { type = string }
+variable "private_subnet_ids" { type = list(string) }
+variable "vpc_security_group" { type = string }
+variable "execution_role_arn" { type = string }
+variable "environment_variables" { type = map(string) }
+variable "tags" { type = map(string) }
