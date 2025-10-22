@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
+
+// Polyfill for crypto.randomUUID if not available
+if (typeof crypto !== 'undefined' && !crypto.randomUUID) {
+  (crypto as any).randomUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  };
+}
 import InputPanel from './components/InputPanel';
 import FeatureGrid from './components/FeatureGrid';
 import CodeEditor from './components/CodeEditor';
