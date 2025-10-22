@@ -34,7 +34,8 @@ output "deployment_info" {
     region               = var.aws_region
     frontend_url         = "https://${aws_cloudfront_distribution.frontend.domain_name}"
     api_endpoint         = aws_api_gateway_stage.api_stage.invoke_url
-    bedrock_model        = var.bedrock_model_id
+    ai_provider          = "OpenRouter"
+    model                = "Claude 3.5 Haiku"
   }
   description = "Deployment information"
 }

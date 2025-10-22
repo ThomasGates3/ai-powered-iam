@@ -28,25 +28,7 @@ resource "aws_iam_role" "lambda_exec_role" {
   }
 }
 
-# IAM policy for Lambda - Bedrock access
-resource "aws_iam_role_policy" "lambda_bedrock_policy" {
-  name = "lambda-bedrock-policy"
-  role = aws_iam_role.lambda_exec_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "bedrock:InvokeModel",
-          "bedrock:InvokeModelWithResponseStream"
-        ]
-        Resource = "arn:aws:bedrock:${var.aws_region}::foundation-model/${var.bedrock_model_id}"
-      }
-    ]
-  })
-}
+# No Bedrock IAM policy needed - using OpenRouter API with API key
 
 # IAM policy for Lambda - DynamoDB access
 resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
@@ -90,14 +72,13 @@ resource "aws_lambda_function" "policy_generator" {
 
   environment {
     variables = {
-      REGION           = var.aws_region
-      BEDROCK_MODEL_ID = var.bedrock_model_id
-      DYNAMODB_TABLE   = aws_dynamodb_table.policies.name
+      REGION               = var.aws_region
+      OPENROUTER_API_KEY   = var.openrouter_api_key
+      DYNAMODB_TABLE       = aws_dynamodb_table.policies.name
     }
   }
 
   depends_on = [
-    aws_iam_role_policy.lambda_bedrock_policy,
     aws_iam_role_policy.lambda_dynamodb_policy,
     aws_iam_role_policy_attachment.lambda_logs_policy
   ]

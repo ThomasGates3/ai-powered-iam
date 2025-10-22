@@ -1,5 +1,4 @@
-// Simplified Lambda handler - uses AWS SDK v3 which is available in Lambda runtime
-const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+// Simplified Lambda handler - uses AWS SDK v3 (DynamoDB) and OpenRouter API
 const { DynamoDBClient, PutItemCommand, ScanCommand, DeleteItemCommand } = require('@aws-sdk/client-dynamodb');
 
 // For UUID generation without external dependency
@@ -12,10 +11,10 @@ function generateUUID() {
 }
 
 const region = process.env.REGION || 'us-east-1';
-const bedrockClient = new BedrockRuntimeClient({ region });
 const dynamoClient = new DynamoDBClient({ region });
 
-const BEDROCK_MODEL = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-sonnet-20240229-v1:0';
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_MODEL = 'anthropic/claude-3.5-haiku';
 const DYNAMODB_TABLE = process.env.DYNAMODB_TABLE || 'iam-policies';
 
 // CORS headers
@@ -26,8 +25,8 @@ const corsHeaders = {
   'Content-Type': 'application/json',
 };
 
-// Generate IAM policy using Bedrock Claude
-async function generatePolicyWithBedrock(description) {
+// Generate IAM policy using OpenRouter Claude
+async function generatePolicyWithOpenRouter(description) {
   const prompt = `You are an AWS IAM security expert. Based on the user's description, generate a least-privilege IAM policy in valid JSON format.
 
 User request: ${description}
@@ -45,39 +44,42 @@ Generate a valid IAM policy JSON object. Respond ONLY with valid JSON, no explan
 }`;
 
   try {
-    const params = {
-      modelId: BEDROCK_MODEL,
-      contentType: 'application/json',
-      accept: 'application/json',
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        anthropic_version: 'bedrock-2024-06-01',
-        max_tokens: 1024,
+        model: OPENROUTER_MODEL,
         messages: [
           {
             role: 'user',
             content: prompt,
           },
         ],
+        max_tokens: 1024,
       }),
-    };
+    });
 
-    const command = new InvokeModelCommand(params);
-    const response = await bedrockClient.send(command);
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`OpenRouter API error: ${response.status} - ${errorBody}`);
+    }
 
-    // Parse response
-    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-    const policyText = responseBody.content[0].text;
+    const responseBody = await response.json();
+    const policyText = responseBody.choices[0].message.content;
 
     // Extract JSON from response
     const jsonMatch = policyText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error('Failed to extract valid JSON from Bedrock response');
+      throw new Error('Failed to extract valid JSON from OpenRouter response');
     }
 
     const policy = JSON.parse(jsonMatch[0]);
     return JSON.stringify(policy);
   } catch (error) {
-    console.error('Bedrock error:', error);
+    console.error('OpenRouter error:', error);
     throw new Error(`Failed to generate policy: ${error.message}`);
   }
 }
@@ -178,10 +180,10 @@ exports.handler = async (event) => {
         };
       }
 
-      // Generate policy with Bedrock
-      console.log('Calling Bedrock...');
-      const policyJson = await generatePolicyWithBedrock(description);
-      console.log('Bedrock response received');
+      // Generate policy with OpenRouter
+      console.log('Calling OpenRouter...');
+      const policyJson = await generatePolicyWithOpenRouter(description);
+      console.log('OpenRouter response received');
 
       // Store in DynamoDB
       const policyId = generateUUID();

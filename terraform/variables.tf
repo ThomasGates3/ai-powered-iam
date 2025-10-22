@@ -8,9 +8,10 @@ variable "environment" {
   default     = "prod"
 }
 
-variable "bedrock_model_id" {
-  description = "Bedrock model ID for policy generation"
-  default     = "anthropic.claude-3-sonnet-20240229-v1:0"
+variable "openrouter_api_key" {
+  description = "OpenRouter API key for Claude model access"
+  sensitive   = true
+  default     = ""
 }
 
 variable "lambda_timeout" {
