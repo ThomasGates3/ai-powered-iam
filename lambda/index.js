@@ -1,9 +1,19 @@
+// Simplified Lambda handler - uses AWS SDK v3 which is available in Lambda runtime
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
-const { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand, DeleteItemCommand, ScanCommand } = require('@aws-sdk/client-dynamodb');
-const { v4: uuidv4 } = require('uuid');
+const { DynamoDBClient, PutItemCommand, ScanCommand, DeleteItemCommand } = require('@aws-sdk/client-dynamodb');
 
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.REGION || 'us-east-1' });
-const dynamoClient = new DynamoDBClient({ region: process.env.REGION || 'us-east-1' });
+// For UUID generation without external dependency
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+const region = process.env.REGION || 'us-east-1';
+const bedrockClient = new BedrockRuntimeClient({ region });
+const dynamoClient = new DynamoDBClient({ region });
 
 const BEDROCK_MODEL = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-sonnet-20240229-v1:0';
 const DYNAMODB_TABLE = process.env.DYNAMODB_TABLE || 'iam-policies';
@@ -22,86 +32,116 @@ async function generatePolicyWithBedrock(description) {
 
 User request: ${description}
 
-Generate a valid IAM policy JSON object. Respond ONLY with valid JSON, no explanations or markdown formatting. The policy should follow AWS IAM policy format.`;
+Generate a valid IAM policy JSON object. Respond ONLY with valid JSON, no explanations or markdown formatting. The policy should follow AWS IAM policy format. Example:
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::bucket-name/*"
+    }
+  ]
+}`;
 
-  const params = {
-    modelId: BEDROCK_MODEL,
-    contentType: 'application/json',
-    accept: 'application/json',
-    body: JSON.stringify({
-      anthropic_version: 'bedrock-2023-06-01',
-      max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    }),
-  };
+  try {
+    const params = {
+      modelId: BEDROCK_MODEL,
+      contentType: 'application/json',
+      accept: 'application/json',
+      body: JSON.stringify({
+        anthropic_version: 'bedrock-2024-06-01',
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+    };
 
-  const command = new InvokeModelCommand(params);
-  const response = await bedrockClient.send(command);
+    const command = new InvokeModelCommand(params);
+    const response = await bedrockClient.send(command);
 
-  // Parse response
-  const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-  const policyText = responseBody.content[0].text;
+    // Parse response
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+    const policyText = responseBody.content[0].text;
 
-  // Extract JSON from response (in case there's extra text)
-  const jsonMatch = policyText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error('Failed to extract valid JSON from Bedrock response');
+    // Extract JSON from response
+    const jsonMatch = policyText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('Failed to extract valid JSON from Bedrock response');
+    }
+
+    const policy = JSON.parse(jsonMatch[0]);
+    return JSON.stringify(policy);
+  } catch (error) {
+    console.error('Bedrock error:', error);
+    throw new Error(`Failed to generate policy: ${error.message}`);
   }
-
-  const policy = JSON.parse(jsonMatch[0]);
-  return JSON.stringify(policy);
 }
 
 // Store policy in DynamoDB
 async function storePolicy(policyId, description, policyJson, timestamp) {
-  const params = {
-    TableName: DYNAMODB_TABLE,
-    Item: {
-      policy_id: { S: policyId },
-      timestamp: { S: timestamp },
-      description: { S: description },
-      policy_json: { S: policyJson },
-      ttl: { N: String(Math.floor(Date.now() / 1000) + 7776000) }, // 90 days TTL
-    },
-  };
+  try {
+    const params = {
+      TableName: DYNAMODB_TABLE,
+      Item: {
+        policy_id: { S: policyId },
+        timestamp: { S: timestamp },
+        description: { S: description },
+        policy_json: { S: policyJson },
+        ttl: { N: String(Math.floor(Date.now() / 1000) + 7776000) }, // 90 days TTL
+      },
+    };
 
-  const command = new PutItemCommand(params);
-  await dynamoClient.send(command);
+    const command = new PutItemCommand(params);
+    await dynamoClient.send(command);
+  } catch (error) {
+    console.error('DynamoDB store error:', error);
+    throw new Error(`Failed to store policy: ${error.message}`);
+  }
 }
 
 // Get all policies
 async function getAllPolicies() {
-  const params = {
-    TableName: DYNAMODB_TABLE,
-  };
+  try {
+    const params = {
+      TableName: DYNAMODB_TABLE,
+    };
 
-  const command = new ScanCommand(params);
-  const response = await dynamoClient.send(command);
+    const command = new ScanCommand(params);
+    const response = await dynamoClient.send(command);
 
-  return (response.Items || []).map(item => ({
-    policy_id: item.policy_id.S,
-    timestamp: item.timestamp.S,
-    description: item.description.S,
-    policy_json: item.policy_json.S,
-  }));
+    return (response.Items || []).map(item => ({
+      policy_id: item.policy_id.S,
+      timestamp: item.timestamp.S,
+      description: item.description.S,
+      policy_json: item.policy_json.S,
+    }));
+  } catch (error) {
+    console.error('DynamoDB scan error:', error);
+    throw new Error(`Failed to fetch policies: ${error.message}`);
+  }
 }
 
 // Delete policy
 async function deletePolicy(policyId) {
-  const params = {
-    TableName: DYNAMODB_TABLE,
-    Key: {
-      policy_id: { S: policyId },
-    },
-  };
+  try {
+    const params = {
+      TableName: DYNAMODB_TABLE,
+      Key: {
+        policy_id: { S: policyId },
+      },
+    };
 
-  const command = new DeleteItemCommand(params);
-  await dynamoClient.send(command);
+    const command = new DeleteItemCommand(params);
+    await dynamoClient.send(command);
+  } catch (error) {
+    console.error('DynamoDB delete error:', error);
+    throw new Error(`Failed to delete policy: ${error.message}`);
+  }
 }
 
 // Lambda handler
@@ -118,13 +158,17 @@ exports.handler = async (event) => {
   }
 
   try {
-    const method = event.requestContext?.http?.method || event.httpMethod;
-    const path = event.rawPath || event.path || '';
+    const method = event.requestContext?.http?.method || event.httpMethod || 'GET';
+    const path = event.rawPath || event.path || '/';
+
+    console.log(`Method: ${method}, Path: ${path}`);
 
     // POST /policies - Generate new policy
     if (method === 'POST' && path.includes('/policies')) {
-      const body = JSON.parse(event.body || '{}');
+      const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
       const { description } = body;
+
+      console.log(`Generating policy for: ${description}`);
 
       if (!description || !description.trim()) {
         return {
@@ -135,13 +179,17 @@ exports.handler = async (event) => {
       }
 
       // Generate policy with Bedrock
+      console.log('Calling Bedrock...');
       const policyJson = await generatePolicyWithBedrock(description);
+      console.log('Bedrock response received');
 
       // Store in DynamoDB
-      const policyId = uuidv4();
+      const policyId = generateUUID();
       const timestamp = new Date().toISOString();
 
+      console.log(`Storing policy ${policyId} in DynamoDB...`);
       await storePolicy(policyId, description, policyJson, timestamp);
+      console.log('Policy stored successfully');
 
       return {
         statusCode: 200,
@@ -157,6 +205,7 @@ exports.handler = async (event) => {
 
     // GET /policies - Get all policies
     if (method === 'GET' && path.includes('/policies') && !path.includes('/policies/')) {
+      console.log('Fetching all policies...');
       const policies = await getAllPolicies();
 
       return {
@@ -171,6 +220,7 @@ exports.handler = async (event) => {
     // DELETE /policies/{id} - Delete policy
     if (method === 'DELETE' && path.includes('/policies/')) {
       const policyId = path.split('/').pop();
+      console.log(`Deleting policy ${policyId}...`);
 
       if (!policyId) {
         return {
@@ -181,6 +231,7 @@ exports.handler = async (event) => {
       }
 
       await deletePolicy(policyId);
+      console.log('Policy deleted successfully');
 
       return {
         statusCode: 200,
@@ -190,6 +241,7 @@ exports.handler = async (event) => {
     }
 
     // Not found
+    console.log('Route not found');
     return {
       statusCode: 404,
       headers: corsHeaders,
@@ -203,7 +255,7 @@ exports.handler = async (event) => {
       headers: corsHeaders,
       body: JSON.stringify({
         error: 'Internal server error',
-        message: error.message,
+        message: error.message || String(error),
       }),
     };
   }
