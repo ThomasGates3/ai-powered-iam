@@ -108,7 +108,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   # Cache policy for index.html (no caching for SPA)
-  cache_behavior {
+  ordered_cache_behavior {
     path_pattern     = "index.html"
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
