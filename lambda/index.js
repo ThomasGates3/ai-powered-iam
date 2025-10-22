@@ -150,9 +150,9 @@ async function deletePolicy(policyId) {
 exports.handler = async (event) => {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  // Handle CORS preflight - must be handled at top level
+  // Handle CORS preflight
   const method = event.requestContext?.http?.method || event.httpMethod || 'GET';
-  if (method === 'OPTIONS' || !event.rawPath || event.rawPath === '/' || !event.rawPath.includes('/policies')) {
+  if (method === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: corsHeaders,
