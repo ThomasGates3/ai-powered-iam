@@ -21,3 +21,15 @@ dist-ssr
 *.sln
 *.sw?
 .env
+# Terraform providers (binary files)
+terraform/.terraform/providers/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate*
+
+# Build artifacts
+dist/
+node_modules/
+
+# Environment files
+.env
+.env.local
