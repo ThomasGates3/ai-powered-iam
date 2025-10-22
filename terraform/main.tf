@@ -11,9 +11,12 @@ provider "aws" {
   region = var.aws_region
 }
 
-# S3 bucket for frontend
-resource "aws_s3_bucket" "frontend" {
-  bucket = "iam-policy-gen-${data.aws_caller_identity.current.account_id}-${var.environment}"
+# Get current AWS account ID
+data "aws_caller_identity" "current" {}
+
+# S3 bucket for static website hosting
+resource "aws_s3_bucket" "website" {
+  bucket = "iam-policy-gen-website-${data.aws_caller_identity.current.account_id}-${var.environment}"
 
   tags = {
     Environment = var.environment
@@ -21,16 +24,18 @@ resource "aws_s3_bucket" "frontend" {
   }
 }
 
-resource "aws_s3_bucket_versioning" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
+# Enable versioning
+resource "aws_s3_bucket_versioning" "website" {
+  bucket = aws_s3_bucket.website.id
 
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
+# Enable encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "website" {
+  bucket = aws_s3_bucket.website.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -39,115 +44,48 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "frontend" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
+# Block public access
+resource "aws_s3_bucket_public_access_block" "website" {
+  bucket = aws_s3_bucket.website.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
-# CloudFront Origin Access Identity
-resource "aws_cloudfront_origin_access_identity" "oai" {
-  comment = "OAI for IAM Policy Generator"
-}
-
-# S3 bucket policy for CloudFront
-resource "aws_s3_bucket_policy" "frontend" {
-  bucket = aws_s3_bucket.frontend.id
+# S3 bucket policy to allow public read access
+resource "aws_s3_bucket_policy" "website" {
+  bucket = aws_s3_bucket.website.id
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "CloudFrontAccess"
+        Sid    = "PublicReadGetObject"
         Effect = "Allow"
         Principal = {
-          AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+          AWS = "*"
         }
         Action   = "s3:GetObject"
-        Resource = "${aws_s3_bucket.frontend.arn}/*"
+        Resource = "${aws_s3_bucket.website.arn}/*"
       }
     ]
   })
+
+  depends_on = [aws_s3_bucket_public_access_block.website]
 }
 
-# CloudFront distribution
-resource "aws_cloudfront_distribution" "frontend" {
-  enabled             = true
-  default_root_object = "index.html"
+# Enable static website hosting
+resource "aws_s3_bucket_website_configuration" "website" {
+  bucket = aws_s3_bucket.website.id
 
-  origin {
-    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id   = "s3"
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
-    }
+  index_document {
+    suffix = "index.html"
   }
 
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "s3"
-
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
-    compress               = true
-  }
-
-  # Cache policy for index.html (no caching for SPA)
-  ordered_cache_behavior {
-    path_pattern     = "index.html"
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "s3"
-
-    forwarded_values {
-      query_string = false
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 0
-    max_ttl                = 0
-  }
-
-  restrictions {
-    geo_restriction {
-      restriction_type = "none"
-    }
-  }
-
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
-
-  custom_error_response {
-    error_code            = 404
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 300
-  }
-
-  tags = {
-    Environment = var.environment
-    Application = "iam-policy-generator"
+  error_document {
+    key = "index.html"
   }
 }
 
@@ -299,6 +237,3 @@ resource "aws_lambda_permission" "api_gateway" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
-
-# Get current AWS account ID
-data "aws_caller_identity" "current" {}

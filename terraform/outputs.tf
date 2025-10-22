@@ -1,11 +1,6 @@
-output "cloudfront_distribution_domain_name" {
-  value       = aws_cloudfront_distribution.frontend.domain_name
-  description = "CloudFront distribution domain name (Frontend URL)"
-}
-
-output "cloudfront_url" {
-  value       = "https://${aws_cloudfront_distribution.frontend.domain_name}"
-  description = "Full CloudFront URL for the frontend application"
+output "s3_website_url" {
+  value       = aws_s3_bucket_website_configuration.website.website_endpoint
+  description = "S3 static website endpoint URL"
 }
 
 output "api_gateway_endpoint" {
@@ -14,8 +9,8 @@ output "api_gateway_endpoint" {
 }
 
 output "s3_bucket_name" {
-  value       = aws_s3_bucket.frontend.id
-  description = "S3 bucket name for frontend hosting"
+  value       = aws_s3_bucket.website.id
+  description = "S3 bucket name for website hosting"
 }
 
 output "dynamodb_table_name" {
@@ -30,12 +25,21 @@ output "lambda_function_name" {
 
 output "deployment_info" {
   value = {
-    environment           = var.environment
-    region               = var.aws_region
-    frontend_url         = "https://${aws_cloudfront_distribution.frontend.domain_name}"
-    api_endpoint         = aws_api_gateway_stage.api_stage.invoke_url
-    ai_provider          = "OpenRouter"
-    model                = "Claude 3.5 Haiku"
+    environment   = var.environment
+    region        = var.aws_region
+    website_url   = "http://${aws_s3_bucket_website_configuration.website.website_endpoint}"
+    api_endpoint  = aws_api_gateway_stage.api_stage.invoke_url
+    ai_provider   = "OpenRouter"
+    model         = "Claude 3.5 Haiku"
   }
   description = "Deployment information"
+}
+
+output "openrouter_model_info" {
+  value = {
+    model_id   = "anthropic/claude-3.5-haiku"
+    provider   = "OpenRouter"
+    model_name = "Claude 3.5 Haiku"
+  }
+  description = "OpenRouter model information"
 }
