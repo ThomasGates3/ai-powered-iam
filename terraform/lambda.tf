@@ -90,9 +90,9 @@ resource "aws_lambda_function" "policy_generator" {
 
   environment {
     variables = {
-      AWS_REGION      = var.aws_region
+      REGION           = var.aws_region
       BEDROCK_MODEL_ID = var.bedrock_model_id
-      DYNAMODB_TABLE  = aws_dynamodb_table.policies.name
+      DYNAMODB_TABLE   = aws_dynamodb_table.policies.name
     }
   }
 

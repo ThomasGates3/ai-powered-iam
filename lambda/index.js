@@ -2,8 +2,8 @@ const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-be
 const { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand, DeleteItemCommand, ScanCommand } = require('@aws-sdk/client-dynamodb');
 const { v4: uuidv4 } = require('uuid');
 
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
-const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
+const bedrockClient = new BedrockRuntimeClient({ region: process.env.REGION || 'us-east-1' });
+const dynamoClient = new DynamoDBClient({ region: process.env.REGION || 'us-east-1' });
 
 const BEDROCK_MODEL = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-sonnet-20240229-v1:0';
 const DYNAMODB_TABLE = process.env.DYNAMODB_TABLE || 'iam-policies';
